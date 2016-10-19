@@ -1,0 +1,45 @@
+set nocompatible
+filetype off
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'scrooloose/nerdtree'
+call vundle#end()            
+filetype plugin indent on  
+
+
+
+colorscheme lucius
+let g:ycm_confirm_extra_conf = 0
+map <C-n> :NERDTreeToggle<CR>
+
+map  <C-p> :tabn<CR>
+map  <C-o> :tabp<CR>
+map  <C-Right> :tabn<CR>
+map  <C-Left> :tabp<CR>
+set mouse=a " enable mouse for tabs and pasting etc
+set number  " line numbers
+
+syn on se title
+set tabstop=4 softtabstop=4 shiftwidth=4
+
+set noexpandtab
+
+set completeopt-=preview " dont show scratchpad
+
+set listchars=tab:\|\ " show pipes for scopes
+set list
+highlight SpecialKey ctermfg=249
+
+set tags=./tags;/
+
+
+augroup auto_comment
+    au!
+    au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+augroup END
+
+set pastetoggle=<F2>
