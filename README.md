@@ -1,4 +1,4 @@
-set nocompatible
+/* set nocompatible
 filetype off
 
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -42,4 +42,4 @@ augroup auto_comment
     au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 augroup END
 
-set pastetoggle=<F2>
+set pastetoggle=<F2>*/
