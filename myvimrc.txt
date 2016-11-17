@@ -43,3 +43,5 @@ augroup auto_comment
 augroup END
 
 set pastetoggle=<F2>
+
+set clipboard=unnamedplus " work with non-default vim packages (vim-gnome)
