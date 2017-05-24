@@ -6,6 +6,7 @@ call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
 Bundle 'majutsushi/tagbar'
+Plugin 'vim-scripts/Conque-GDB'
 "Plugin 'Valloric/YouCompleteMe'
 "Bundle 'Rip-Rip/clang_complete'
 Plugin 'scrooloose/nerdtree'
@@ -15,13 +16,9 @@ filetype plugin indent on
 
 set ignorecase " ignore case for searches 
 set smartcase
+" Press F4 to toggle highlighting on/off, and show current value.
+:noremap <F4> :set hlsearch! hlsearch?<CR>
 
-inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
-\ "\<lt>C-n>" :
-\ "\<lt>C-x>\<lt>C-o><c-r>=pumvisible() ?" .
-\ "\"\\<lt>c-n>\\<lt>c-p>\\<lt>c-n>\" :" .
-\ "\" \\<lt>bs>\\<lt>C-n>\"\<CR>"
-imap <C-@> <C-Space>
 
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
@@ -47,6 +44,8 @@ if has('gui_running')
 else
     " Non-GUI (terminal) colors
     colorscheme lucius
+	set listchars=tab:\|\ " show pipes for scopes
+	set list
 endif
 
 
@@ -69,11 +68,23 @@ set noexpandtab
 set completeopt-=preview " dont show scratchpad
 set completeopt=longest,menuone
 
-" set listchars=tab:\|\ " show pipes for scopes
-" set list
+" inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+"   \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+" inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
+"  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+
+" inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
+" \ "\<lt>C-n>" :
+" \ "\<lt>C-x>\<lt>C-o><c-r>=pumvisible() ?" .
+" \ "\"\\<lt>c-n>\\<lt>c-p>\\<lt>c-n>\" :" .
+" \ "\" \\<lt>bs>\\<lt>C-n>\"\<CR>"
+" imap <C-@> <C-Space>
+
 highlight SpecialKey ctermfg=249
 
-set tags=./tags;/
+
 
 
 augroup auto_comment
@@ -81,9 +92,37 @@ augroup auto_comment
     au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 augroup END
 
-set pastetoggle=<F2>
+" set pastetoggle=<F2>
 
 set clipboard=unnamedplus " work with non-default vim packages (vim-gnome)
 set shortmess+=A " disable Swap file exists warnings
 
 " ctrl-W + J (capped) -- move compilation errors window
+
+set guioptions-=e " non-gui tabs
+
+set nowrap " add scroll space instead of line breaks
+
+set tags=/home/al/code/amvk/tags
+
+function! DelTagOfFile(file)
+  let fullpath = a:file
+  let cwd = getcwd()
+  let tagfilename = cwd . "/tags"
+  let f = substitute(fullpath, cwd . "/", "", "")
+  let f = escape(f, './')
+  let cmd = 'sed -i "/' . f . '/d" "' . tagfilename . '"'
+  let resp = system(cmd)
+endfunction
+
+function! UpdateTags()
+  let f = expand("%:p")
+  let cwd = getcwd()
+  let tagfilename = cwd . "/tags"
+  let cmd = 'ctags -a -f ' . tagfilename . ' --fields=+iaS --extra=+q ' . '"' . f . '"'
+  call DelTagOfFile(f)
+  let resp = system(cmd)
+endfunction
+autocmd BufWritePost *.cpp,*.h,*.c call UpdateTags()
+
+" Ctrl + N for clang popup
